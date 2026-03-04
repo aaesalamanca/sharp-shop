@@ -4,20 +4,20 @@ Un cliente de Capitole le solicita un pequeño servicio para gestionar los pedid
 
 Se pide la creación de una Web API en NET 8 / 10 (en C#) con los siguientes endpoints:
 
-- Crear un pedido
-- Añadir productos al pedido
-- Eliminar productos del pedido
-- Confirmar un pedido
-- Enviar un pedido
-- Consultar un pedido por Id
+- Crear un pedido.
+- Añadir productos al pedido.
+- Eliminar productos del pedido.
+- Confirmar un pedido.
+- Enviar un pedido.
+- Consultar un pedido por Id.
 - Obtener todos los productos y sus precios.
-- Agregar productos al stock (opcional, pero te resultará cómodo tenerlo)
+- Agregar productos al stock (opcional, pero te resultará cómodo tenerlo).
 
 Reglas de negocio:
 
 1. Un pedido solo puede confirmarse si tiene al menos un producto.
 2. El total del pedido se calcular como:
-    1. Precio unitario * cantidad
+    1. Precio unitario * cantidad.
     2. Si el total supera 200 €, aplicar un 10% de descuento (no 200 USD).
 3. Un pedido confirmado o enviado no puede modificarse.
 4. Los precios de los productos están almacenados en euros.

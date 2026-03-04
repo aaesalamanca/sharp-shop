@@ -1,6 +1,6 @@
 # PRUEBA TÉCNICA 2026 – NET 8+
 
-Un cliente de Capitole le solicita un pequeño servicio para gestionar los pedidos de su nueva tienda online. La moneda por defecto es el Euro, pero las solicitudes deben dar la opción de cambiar la moneda.
+Un cliente de Capitole le solicita un pequeño servicio para gestionar los pedidos de su nueva tienda online. La moneda por defecto es el euro, pero las solicitudes deben dar la opción de cambiar la moneda.
 
 Se pide la creación de una Web API en NET 8 / 10 (en C#) con los siguientes endpoints:
 
@@ -17,8 +17,8 @@ Reglas de negocio:
 
 1. Un pedido solo puede confirmarse si tiene al menos un producto.
 2. El total del pedido se calcular como:
-  a. Precio unitario * cantidad
-  b. Si el total supera 200 €, aplicar un 10% de descuento (no 200 USD).
+    1. Precio unitario * cantidad
+    2. Si el total supera 200 €, aplicar un 10% de descuento (no 200 USD).
 3. Un pedido confirmado o enviado no puede modificarse.
 4. Los precios de los productos están almacenados en euros.
 5. Para obtener el cambio en otras monedas, usa [https://www.frankfurter.app](https://www.frankfurter.app) (HTTP GET [https://api.frankfurter.app/latest?from=EUR&to=USD](https://api.frankfurter.app/latest?from=EUR&to=USD)).

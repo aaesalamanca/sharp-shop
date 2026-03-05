@@ -105,8 +105,8 @@ public class OrderService(
             convertedTotal = await _currencyService.ConvertAsync(totalInEuros, currency);
         }
 
-        var items = order
-            .Items.Select(async item =>
+        var items = await Task.WhenAll(
+            order.Items.Select(async item =>
             {
                 decimal unitPrice = item.Book.UnitPrice;
                 if (!currency.Equals("EUR", StringComparison.CurrentCultureIgnoreCase))
@@ -122,7 +122,7 @@ public class OrderService(
                     item.Quantity
                 );
             })
-            .ToList();
+        );
 
         return new GetOrderOutput(
             order.Id,
@@ -130,7 +130,7 @@ public class OrderService(
             order.CreatedAt,
             order.ConfirmedAt,
             order.ShippedAt,
-            items,
+            items.ToList(),
             Math.Round(convertedTotal, 2),
             currency.ToUpper()
         );

@@ -4,31 +4,24 @@ public class OrderItem
 {
     public Guid OrderId { get; private set; }
     public Guid BookId { get; private set; }
-    public Book Book { get; private set; } = null!;
     public int Quantity { get; private set; }
 
     private OrderItem() { }
 
-    public OrderItem(Book book)
+    public OrderItem(Guid bookId, Guid orderId, int quantity = 1)
     {
-        ArgumentNullException.ThrowIfNull(book, nameof(book));
-
-        Book = book;
-        BookId = book.Id;
-        Quantity = 1;
-    }
-
-    public OrderItem(Book book, Guid orderId)
-        : this(book)
-    {
+        BookId = bookId;
         OrderId = orderId;
+        Quantity = quantity;
     }
 
-    public decimal CalculateTotal() => Book.UnitPrice * Quantity;
+    public decimal CalculateTotal(decimal unitPrice) => unitPrice * Quantity;
 
     public void AddOne() => Quantity += 1;
 
     public void DeleteOne() => Quantity -= 1;
+
+    public void SetQuantity(int quantity) => Quantity = quantity;
 
     public bool IsEmpty() => Quantity == 0;
 }

@@ -94,11 +94,7 @@ public class AppDbContext : DbContext
             entity.HasKey(e => new { e.OrderId, e.BookId });
             entity.Property(e => e.Quantity).IsRequired();
 
-            entity
-                .HasOne(e => e.Book)
-                .WithMany()
-                .HasForeignKey(e => e.BookId)
-                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasIndex(e => e.BookId);
         });
     }
 

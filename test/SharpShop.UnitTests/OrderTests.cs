@@ -14,11 +14,12 @@ public class OrderTests
         var book1 = new Book("Book 1", "Author 1", 50m);
         var book2 = new Book("Book 2", "Author 2", 75m);
 
-        order.AddBook(book1);
-        order.AddBook(book2);
+        order.AddBook(book1.Id);
+        order.AddBook(book2.Id);
 
         // Act.
-        var total = order.CalculateTotal();
+        var unitPrices = new Dictionary<Guid, decimal> { [book1.Id] = 50m, [book2.Id] = 75m };
+        var total = order.CalculateTotal(unitPrices);
 
         // Assert.
         Assert.Equal(125m, total);
@@ -32,11 +33,12 @@ public class OrderTests
         var book1 = new Book("Book 1", "Author 1", 120m);
         var book2 = new Book("Book 2", "Author 2", 100m);
 
-        order.AddBook(book1);
-        order.AddBook(book2);
+        order.AddBook(book1.Id);
+        order.AddBook(book2.Id);
 
         // Act.
-        var total = order.CalculateTotal();
+        var unitPrices = new Dictionary<Guid, decimal> { [book1.Id] = 120m, [book2.Id] = 100m };
+        var total = order.CalculateTotal(unitPrices);
 
         // Assert.
         Assert.Equal(198m, total);
@@ -48,7 +50,7 @@ public class OrderTests
         // Arrange.
         var order = Order.CreateNew();
         var book = new Book("Book 1", "Author 1", 50m);
-        order.AddBook(book);
+        order.AddBook(book.Id);
 
         // Act.
         order.Confirm();
@@ -64,7 +66,7 @@ public class OrderTests
         // Arrange.
         var order = Order.CreateNew();
         var book = new Book("Book 1", "Author 1", 50m);
-        order.AddBook(book);
+        order.AddBook(book.Id);
         order.Confirm();
 
         // Act.
@@ -81,12 +83,12 @@ public class OrderTests
         // Arrange.
         var order = Order.CreateNew();
         var book = new Book("Book 1", "Author 1", 50m);
-        order.AddBook(book);
+        order.AddBook(book.Id);
         order.Confirm();
-        var book2 = new Book("Book 2", "Author 2", 30m);
+        var book2Id = Guid.NewGuid();
 
         // Act & Assert.
-        Assert.Throws<CannotModifyConfirmedOrderException>(() => order.AddBook(book2));
+        Assert.Throws<CannotModifyConfirmedOrderException>(() => order.AddBook(book2Id));
     }
 
     [Fact]
@@ -95,13 +97,13 @@ public class OrderTests
         // Arrange.
         var order = Order.CreateNew();
         var book = new Book("Book 1", "Author 1", 50m);
-        order.AddBook(book);
+        order.AddBook(book.Id);
         order.Confirm();
         order.Ship();
-        var book2 = new Book("Book 2", "Author 2", 30m);
+        var book2Id = Guid.NewGuid();
 
         // Act & Assert.
-        Assert.Throws<OrderAlreadyShippedException>(() => order.AddBook(book2));
+        Assert.Throws<OrderAlreadyShippedException>(() => order.AddBook(book2Id));
     }
 
     [Fact]

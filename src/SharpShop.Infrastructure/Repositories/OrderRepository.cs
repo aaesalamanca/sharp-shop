@@ -9,15 +9,12 @@ public class OrderRepository(AppDbContext context) : IOrderRepository
 {
     public async Task<Order?> GetByIdAsync(Guid id)
     {
-        return await context
-            .Orders.Include(o => o.Items)
-                .ThenInclude(i => i.Book)
-            .FirstOrDefaultAsync(o => o.Id == id);
+        return await context.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id);
     }
 
     public async Task<IEnumerable<Order>> GetAllAsync()
     {
-        return await context.Orders.Include(o => o.Items).ThenInclude(i => i.Book).ToListAsync();
+        return await context.Orders.Include(o => o.Items).ToListAsync();
     }
 
     public async Task AddAsync(Order order)
@@ -34,21 +31,38 @@ public class OrderRepository(AppDbContext context) : IOrderRepository
 
     public async Task UpdateAsync(Order order)
     {
-        var existingOrder = await context
+        var trackedOrder = await context
             .Orders.Include(o => o.Items)
             .FirstOrDefaultAsync(o => o.Id == order.Id);
 
-        if (existingOrder is null)
+        if (trackedOrder is null)
             return;
 
-        context.OrderItems.RemoveRange(existingOrder.Items);
+        var trackedBookIds = trackedOrder.Items.Select(i => i.BookId).ToHashSet();
+        var newBookIds = order.Items.Select(i => i.BookId).ToHashSet();
 
-        foreach (var item in order.Items)
+        var itemsToRemove = trackedOrder.Items.Where(i => !newBookIds.Contains(i.BookId)).ToList();
+        foreach (var item in itemsToRemove)
         {
-            context.OrderItems.Add(item);
+            context.OrderItems.Remove(item);
         }
 
-        context.Orders.Update(order);
+        foreach (var newItem in order.Items)
+        {
+            var existingItem = trackedOrder.Items.FirstOrDefault(i => i.BookId == newItem.BookId);
+            if (existingItem is not null)
+            {
+                existingItem.SetQuantity(newItem.Quantity);
+            }
+            else
+            {
+                var newOrderItem = new OrderItem(newItem.BookId, trackedOrder.Id, newItem.Quantity);
+                context.OrderItems.Add(newOrderItem);
+            }
+        }
+
+        trackedOrder.UpdateStatus(order.Status, order.ConfirmedAt, order.ShippedAt);
+
         await context.SaveChangesAsync();
     }
 }

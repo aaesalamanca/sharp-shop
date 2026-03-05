@@ -36,7 +36,7 @@ public class OrderService(
             await _bookRepository.GetByIdAsync(input.BookId)
             ?? throw new BookNotFoundException(input.BookId);
 
-        order.AddBook(book);
+        order.AddBook(book.Id);
         await _orderRepository.UpdateAsync(order);
 
         return await MapToOutput(order);
@@ -93,7 +93,13 @@ public class OrderService(
 
     private async Task<GetOrderOutput> MapToOutput(Order order, string currency = "EUR")
     {
-        var totalInEuros = order.CalculateTotal();
+        var bookIds = order.Items.Select(i => i.BookId).ToList();
+        var books = (await _bookRepository.GetAllAsync())
+            .Where(b => bookIds.Contains(b.Id))
+            .ToDictionary(b => b.Id);
+
+        var unitPricesEur = books.ToDictionary(b => b.Key, b => b.Value.UnitPrice);
+        var totalInEuros = order.CalculateTotal(unitPricesEur);
 
         decimal convertedTotal;
         if (currency.Equals("EUR", StringComparison.CurrentCultureIgnoreCase))
@@ -105,24 +111,25 @@ public class OrderService(
             convertedTotal = await _currencyService.ConvertAsync(totalInEuros, currency);
         }
 
-        var items = await Task.WhenAll(
-            order.Items.Select(async item =>
+        var items = order
+            .Items.Select(item =>
             {
-                decimal unitPrice = item.Book.UnitPrice;
+                var book = books.GetValueOrDefault(item.BookId);
+                decimal unitPrice = book?.UnitPrice ?? 0;
                 if (!currency.Equals("EUR", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    unitPrice = await _currencyService.ConvertAsync(item.Book.UnitPrice, currency);
+                    unitPrice = _currencyService.ConvertAsync(unitPrice, currency).Result;
                 }
 
                 return new GetOrderItemOutput(
-                    item.Book.Id,
-                    item.Book.Title,
-                    item.Book.Author,
+                    item.BookId,
+                    book?.Title ?? "Unknown",
+                    book?.Author ?? "Unknown",
                     Math.Round(unitPrice, 2),
                     item.Quantity
                 );
             })
-        );
+            .ToList();
 
         return new GetOrderOutput(
             order.Id,
@@ -130,7 +137,7 @@ public class OrderService(
             order.CreatedAt,
             order.ConfirmedAt,
             order.ShippedAt,
-            items.ToList(),
+            items,
             Math.Round(convertedTotal, 2),
             currency.ToUpper()
         );

@@ -189,6 +189,7 @@ app.UseExceptionHandler(errorApp =>
             case OrderAlreadyShippedException:
             case CannotModifyConfirmedOrderException:
             case DomainException:
+            case InvalidOperationException:
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsJsonAsync(new { error = exception.Message });
                 break;

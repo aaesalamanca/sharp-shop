@@ -25,7 +25,7 @@ public class Order
 
     public static Order CreateNew() => new();
 
-    public void AddBook(Book book)
+    public void AddBook(Guid bookId)
     {
         if (Status == OrderStatus.Confirmed)
             throw new CannotModifyConfirmedOrderException();
@@ -33,12 +33,12 @@ public class Order
         if (Status == OrderStatus.Shipped)
             throw new OrderAlreadyShippedException();
 
-        var existingItem = Items.SingleOrDefault(i => i.BookId == book.Id);
+        var existingItem = Items.SingleOrDefault(i => i.BookId == bookId);
 
         if (existingItem is not null)
             existingItem.AddOne();
         else
-            Items.Add(new OrderItem(book));
+            Items.Add(new OrderItem(bookId, Id));
     }
 
     public void RemoveBook(Guid bookId)
@@ -89,9 +89,16 @@ public class Order
         ShippedAt = DateTime.UtcNow;
     }
 
-    public decimal CalculateTotal()
+    public void UpdateStatus(OrderStatus status, DateTime? confirmedAt, DateTime? shippedAt)
     {
-        var subtotal = Items.Sum(i => i.CalculateTotal());
+        Status = status;
+        ConfirmedAt = confirmedAt;
+        ShippedAt = shippedAt;
+    }
+
+    public decimal CalculateTotal(Dictionary<Guid, decimal> unitPrices)
+    {
+        var subtotal = Items.Sum(i => i.CalculateTotal(unitPrices.GetValueOrDefault(i.BookId)));
 
         if (subtotal > DiscountThreshold)
             subtotal *= 1 - DiscountPercentage;

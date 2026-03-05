@@ -177,44 +177,26 @@ app.UseExceptionHandler(errorApp =>
             .Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()
             ?.Error;
 
-        if (exception is OrderNotFoundException)
+        switch (exception)
         {
-            context.Response.StatusCode = 404;
-            await context.Response.WriteAsJsonAsync(new { error = exception.Message });
-        }
-        else if (exception is BookNotFoundException)
-        {
-            context.Response.StatusCode = 404;
-            await context.Response.WriteAsJsonAsync(new { error = exception.Message });
-        }
-        else if (exception is OrderMustHaveAtLeastOneBookException)
-        {
-            context.Response.StatusCode = 400;
-            await context.Response.WriteAsJsonAsync(new { error = exception.Message });
-        }
-        else if (exception is OrderAlreadyConfirmedException)
-        {
-            context.Response.StatusCode = 400;
-            await context.Response.WriteAsJsonAsync(new { error = exception.Message });
-        }
-        else if (exception is OrderAlreadyShippedException)
-        {
-            context.Response.StatusCode = 400;
-            await context.Response.WriteAsJsonAsync(new { error = exception.Message });
-        }
-        else if (exception is CannotModifyConfirmedOrderException)
-        {
-            context.Response.StatusCode = 400;
-            await context.Response.WriteAsJsonAsync(new { error = exception.Message });
-        }
-        else if (exception is DomainException)
-        {
-            context.Response.StatusCode = 400;
-            await context.Response.WriteAsJsonAsync(new { error = exception.Message });
-        }
-        else
-        {
-            await context.Response.WriteAsJsonAsync(new { error = "An unexpected error occurred" });
+            case OrderNotFoundException:
+            case BookNotFoundException:
+                context.Response.StatusCode = 404;
+                await context.Response.WriteAsJsonAsync(new { error = exception.Message });
+                break;
+            case OrderMustHaveAtLeastOneBookException:
+            case OrderAlreadyConfirmedException:
+            case OrderAlreadyShippedException:
+            case CannotModifyConfirmedOrderException:
+            case DomainException:
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsJsonAsync(new { error = exception.Message });
+                break;
+            default:
+                await context.Response.WriteAsJsonAsync(
+                    new { error = "An unexpected error occurred" }
+                );
+                break;
         }
     });
 });

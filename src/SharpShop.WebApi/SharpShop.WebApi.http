@@ -1,6 +1,6 @@
-@SharpShop.WebApi_HostAddress = http://localhost:5018
+@WebApi_HostAddress = http://localhost:5018
 
-GET {{SharpShop.WebApi_HostAddress}}/weatherforecast/
+GET {{WebApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

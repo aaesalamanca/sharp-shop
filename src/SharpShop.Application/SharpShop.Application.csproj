@@ -1,5 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <PackageReference
+      Include="Microsoft.Extensions.DependencyInjection.Abstractions"
+      Version="10.0.3"
+    />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SharpShop.Domain\SharpShop.Domain.csproj" />
   </ItemGroup>
 

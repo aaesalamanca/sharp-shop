@@ -16,29 +16,53 @@ public class AppDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSeeding(
-            (context, isUpdate) =>
-            {
-                if (!context.Set<Book>().Any())
+        optionsBuilder
+            .UseSeeding(
+                (context, _) =>
                 {
-                    var books = new List<Book>
+                    if (!context.Set<Book>().Any())
                     {
-                        new("Clean Code", "Robert C. Martin", 45.00m),
-                        new("The Pragmatic Programmer", "David Thomas", 42.50m),
-                        new("Design Patterns", "Gang of Four", 38.00m),
-                        new("Refactoring", "Martin Fowler", 35.00m),
-                        new("Domain-Driven Design", "Eric Evans", 48.00m),
-                    };
+                        var books = new List<Book>
+                        {
+                            new("Clean Code", "Robert C. Martin", 45.00m),
+                            new("The Pragmatic Programmer", "David Thomas", 42.50m),
+                            new("Design Patterns", "Gang of Four", 38.00m),
+                            new("Refactoring", "Martin Fowler", 35.00m),
+                            new("Domain-Driven Design", "Eric Evans", 48.00m),
+                        };
 
-                    foreach (var book in books)
-                    {
-                        context.Set<Book>().Add(book);
+                        foreach (var book in books)
+                        {
+                            context.Set<Book>().Add(book);
+                        }
+
+                        context.SaveChanges();
                     }
-
-                    context.SaveChanges();
                 }
-            }
-        );
+            )
+            .UseAsyncSeeding(
+                async (context, _, cancellationToken) =>
+                {
+                    if (!await context.Set<Book>().AnyAsync(cancellationToken))
+                    {
+                        var books = new List<Book>
+                        {
+                            new("Clean Code", "Robert C. Martin", 45.00m),
+                            new("The Pragmatic Programmer", "David Thomas", 42.50m),
+                            new("Design Patterns", "Gang of Four", 38.00m),
+                            new("Refactoring", "Martin Fowler", 35.00m),
+                            new("Domain-Driven Design", "Eric Evans", 48.00m),
+                        };
+
+                        foreach (var book in books)
+                        {
+                            await context.Set<Book>().AddAsync(book, cancellationToken);
+                        }
+
+                        await context.SaveChangesAsync(cancellationToken);
+                    }
+                }
+            );
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

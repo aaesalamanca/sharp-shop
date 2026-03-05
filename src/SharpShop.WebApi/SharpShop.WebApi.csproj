@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.3" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
@@ -15,5 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SharpShop.Application\SharpShop.Application.csproj" />
+    <ProjectReference Include="..\SharpShop.Domain\SharpShop.Domain.csproj" />
+    <ProjectReference Include="..\SharpShop.Infrastructure\SharpShop.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

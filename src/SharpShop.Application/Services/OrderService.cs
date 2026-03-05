@@ -111,14 +111,14 @@ public class OrderService(
             convertedTotal = await _currencyService.ConvertAsync(totalInEuros, currency);
         }
 
-        var items = order
-            .Items.Select(item =>
+        var items = await Task.WhenAll(
+            order.Items.Select(async item =>
             {
                 var book = books.GetValueOrDefault(item.BookId);
                 decimal unitPrice = book?.UnitPrice ?? 0;
                 if (!currency.Equals("EUR", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    unitPrice = _currencyService.ConvertAsync(unitPrice, currency).Result;
+                    unitPrice = await _currencyService.ConvertAsync(unitPrice, currency);
                 }
 
                 return new GetOrderItemOutput(
@@ -129,7 +129,7 @@ public class OrderService(
                     item.Quantity
                 );
             })
-            .ToList();
+        );
 
         return new GetOrderOutput(
             order.Id,
@@ -137,7 +137,7 @@ public class OrderService(
             order.CreatedAt,
             order.ConfirmedAt,
             order.ShippedAt,
-            items,
+            items.ToList(),
             Math.Round(convertedTotal, 2),
             currency.ToUpper()
         );

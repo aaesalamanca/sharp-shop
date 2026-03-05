@@ -20,7 +20,10 @@ public class Order
         Id = Guid.NewGuid();
         Status = OrderStatus.Created;
         CreatedAt = DateTime.UtcNow;
+        Items = [];
     }
+
+    public static Order CreateNew() => new();
 
     public void AddBook(Book book)
     {
@@ -30,7 +33,7 @@ public class Order
         if (Status == OrderStatus.Shipped)
             throw new OrderAlreadyShippedException();
 
-        var existingItem = Items.SingleOrDefault(i => i.Book.Id == book.Id);
+        var existingItem = Items.SingleOrDefault(i => i.BookId == book.Id);
 
         if (existingItem is not null)
             existingItem.AddOne();
@@ -46,7 +49,7 @@ public class Order
         if (Status == OrderStatus.Shipped)
             throw new OrderAlreadyShippedException();
 
-        var item = Items.FirstOrDefault(i => i.Book.Id == bookId);
+        var item = Items.FirstOrDefault(i => i.BookId == bookId);
 
         if (item is null)
             return;

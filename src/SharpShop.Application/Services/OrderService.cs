@@ -86,7 +86,7 @@ public class OrderService(
     {
         var order =
             await _orderRepository.GetByIdAsync(input.OrderId)
-            ?? throw new Domain.Exceptions.OrderNotFoundException(input.OrderId);
+            ?? throw new OrderNotFoundException(input.OrderId);
 
         return await MapToOutput(order, input.Currency ?? "EUR");
     }

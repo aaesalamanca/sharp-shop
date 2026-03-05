@@ -4,10 +4,12 @@ namespace SharpShop.Domain.Entities;
 
 public class Book
 {
-    public Guid Id { get; }
-    public string Title { get; }
-    public string Author { get; }
-    public decimal UnitPrice { get; }
+    public Guid Id { get; private set; }
+    public string Title { get; private set; } = string.Empty;
+    public string Author { get; private set; } = string.Empty;
+    public decimal UnitPrice { get; private set; }
+
+    private Book() { }
 
     public Book(string title, string author, decimal unitPrice)
     {

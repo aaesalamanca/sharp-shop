@@ -1,6 +1,189 @@
 @WebApi_HostAddress = http://localhost:5018
 
-GET {{WebApi_HostAddress}}/weatherforecast/
+# GET All Books
+GET {{WebApi_HostAddress}}/api/books
 Accept: application/json
+
+###
+GET {{WebApi_HostAddress}}/api/books?currency=USD
+Accept: application/json
+
+###
+GET {{WebApi_HostAddress}}/api/books?currency=GBP
+Accept: application/json
+
+###
+
+# Create Order - Example 1
+POST {{WebApi_HostAddress}}/api/orders
+Accept: application/json
+Content-Type: application/json
+
+{}
+
+###
+# Create Order - Example 2
+POST {{WebApi_HostAddress}}/api/orders
+Accept: application/json
+Content-Type: application/json
+
+{}
+
+###
+# Create Order - Example 3
+POST {{WebApi_HostAddress}}/api/orders
+Accept: application/json
+Content-Type: application/json
+
+{}
+
+###
+
+# Get Order - Replace with actual order ID from create response
+# Example Order ID: 00000000-0000-0000-0000-000000000001
+GET {{WebApi_HostAddress}}/api/orders/00000000-0000-0000-0000-000000000001
+Accept: application/json
+
+###
+GET {{WebApi_HostAddress}}/api/orders/00000000-0000-0000-0000-000000000001?currency=USD
+Accept: application/json
+
+###
+GET {{WebApi_HostAddress}}/api/orders/00000000-0000-0000-0000-000000000001?currency=GBP
+Accept: application/json
+
+###
+
+# Add Book to Order - Replace orderId and bookId with actual IDs
+# Seeded book IDs are created dynamically - use GET /api/books first to get valid IDs
+# Example book IDs from seed:
+# Clean Code (45.00 EUR)
+# The Pragmatic Programmer (42.50 EUR)
+# Design Patterns (38.00 EUR)
+# Refactoring (35.00 EUR)
+# Domain-Driven Design (48.00 EUR)
+
+# Add first book to order
+POST {{WebApi_HostAddress}}/api/orders/00000000-0000-0000-0000-000000000001/books
+Accept: application/json
+Content-Type: application/json
+
+{
+  "bookId": "00000000-0000-0000-0000-000000000001"
+}
+
+###
+# Add second book to order
+POST {{WebApi_HostAddress}}/api/orders/00000000-0000-0000-0000-000000000001/books
+Accept: application/json
+Content-Type: application/json
+
+{
+  "bookId": "00000000-0000-0000-0000-000000000002"
+}
+
+###
+# Add third book to order
+POST {{WebApi_HostAddress}}/api/orders/00000000-0000-0000-0000-000000000001/books
+Accept: application/json
+Content-Type: application/json
+
+{
+  "bookId": "00000000-0000-0000-0000-000000000003"
+}
+
+###
+
+# Remove book from order
+DELETE {{WebApi_HostAddress}}/api/orders/00000000-0000-0000-0000-000000000001/books/00000000-0000-0000-0000-000000000002
+Accept: application/json
+
+###
+
+# Update Order Status - Confirm
+PATCH {{WebApi_HostAddress}}/api/orders/00000000-0000-0000-0000-000000000001
+Accept: application/json
+Content-Type: application/json
+
+{
+  "status": "Confirmed"
+}
+
+###
+# Update Order Status - Ship
+PATCH {{WebApi_HostAddress}}/api/orders/00000000-0000-0000-0000-000000000001
+Accept: application/json
+Content-Type: application/json
+
+{
+  "status": "Shipped"
+}
+
+###
+
+# Add Book to Stock - Example 1
+POST {{WebApi_HostAddress}}/api/books
+Accept: application/json
+Content-Type: application/json
+
+{
+  "title": "Clean Architecture",
+  "author": "Robert C. Martin",
+  "priceInEuros": 40.00
+}
+
+###
+# Add Book to Stock - Example 2
+POST {{WebApi_HostAddress}}/api/books
+Accept: application/json
+Content-Type: application/json
+
+{
+  "title": "The Clean Coder",
+  "author": "Robert C. Martin",
+  "priceInEuros": 35.50
+}
+
+###
+# Add Book to Stock - Example 3
+POST {{WebApi_HostAddress}}/api/books
+Accept: application/json
+Content-Type: application/json
+
+{
+  "title": "Working Effectively with Legacy Code",
+  "author": "Michael C. Feathers",
+  "priceInEuros": 44.99
+}
+
+###
+
+# Error Cases
+
+# Try to add book with invalid price (should fail)
+POST {{WebApi_HostAddress}}/api/books
+Accept: application/json
+Content-Type: application/json
+
+{
+  "title": "Invalid Price Book",
+  "author": "Test Author",
+  "priceInEuros": -10.00
+}
+
+###
+# Try to get non-existent order (should return 404)
+GET {{WebApi_HostAddress}}/api/orders/99999999-9999-9999-9999-999999999999
+Accept: application/json
+
+###
+# Try to confirm already confirmed order (should return 400)
+PATCH {{WebApi_HostAddress}}/api/orders/00000000-0000-0000-0000-000000000001
+Accept: application/json
+Content-Type: application/json
+
+{
+  "status": "Confirmed"
+}
 
 ###

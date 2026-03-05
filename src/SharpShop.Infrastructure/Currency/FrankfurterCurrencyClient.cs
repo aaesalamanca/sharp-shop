@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text.Json;
 using SharpShop.Application.Services;
 
@@ -6,7 +7,10 @@ namespace SharpShop.Infrastructure.Currency;
 public class FrankfurterCurrencyClient(HttpClient httpClient) : ICurrencyService
 {
     private readonly HttpClient _httpClient = httpClient;
-    private static readonly Dictionary<string, (decimal Rate, DateTime CachedAt)> _cache = [];
+    private static readonly ConcurrentDictionary<
+        string,
+        (decimal Rate, DateTime CachedAt)
+    > _cache = [];
     private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(24);
 
     public async Task<decimal> GetExchangeRateAsync(string fromCurrency, string toCurrency)

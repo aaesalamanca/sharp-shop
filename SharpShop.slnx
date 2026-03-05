@@ -1,1 +1,11 @@
-<Solution></Solution>
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SharpShop.Application/SharpShop.Application.csproj" />
+    <Project Path="src/SharpShop.Domain/SharpShop.Domain.csproj" />
+    <Project Path="src/SharpShop.Infrastructure/SharpShop.Infrastructure.csproj" />
+    <Project Path="src/SharpShop.WebApi/SharpShop.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/SharpShop.UnitTests/SharpShop.UnitTests.csproj" />
+  </Folder>
+</Solution>
